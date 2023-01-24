@@ -64,12 +64,14 @@ bool TextureLoader::saveTexture(Texture *p_texture, std::string& p_filename, Tex
 	return false;
 }
 
-TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[MaterialTypes::MaterialTypes_NumOfTypes], std::string &p_filename)
+TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[MaterialTypes::MaterialTypes_NumOfTypes], const std::string &p_filename, bool p_average)
 {	
 	bool atLeastOneTexturePresent = false;
 	bool sizeMatches = true;
 	unsigned int textureSize = 0;
 	Texture *firstValidTexture = nullptr;
+
+	// Go over each input texture, to compare their sizes and determine whether any of them are present
 	for(unsigned int i = 0; i < MaterialTypes::MaterialTypes_NumOfTypes; i++)
 	{
 		if(p_textures[i])
@@ -87,7 +89,7 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 	}
 
 	if(!sizeMatches)
-		return TextureErrorCodes::TextureErrorCodes_SizeMissmatch;
+		return TextureErrorCodes::TextureErrorCodes_SizeMismatch;
 
 	if(!atLeastOneTexturePresent)
 		return TextureErrorCodes::TextureErrorCodes_NoTextures;
@@ -97,51 +99,102 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 
 	Texture combinedTexture;
 
-	//combinedTexture.m_bitmap = FreeImage_Allocate(firstValidTexture->m_textureWidth, firstValidTexture->m_textureHeight, firstValidTexture->m_bytesPerPixel, 0, 0, 0);
+	// 4 colors per channel, since the combined texture is RGBA
 	combinedTexture.m_pixelData = new unsigned char[static_cast<std::size_t>(textureSize) * 4];
-
 
 	// Go over each pixel and assign them to the combined texture
 	for(unsigned int i = 0; i < textureSize; i++)
 	{
-		unsigned char R = 0;
-		unsigned char M = 0;
-		unsigned char H = 0;
-		unsigned char AO = 255;
+		// Declare each color channel value
+		unsigned char R = 0ui8;
+		unsigned char M = 0ui8;
+		unsigned char H = 0ui8;
+		unsigned char AO = 255ui8;
 
+		// Go over each color channel and calculate the value; If the input texture for that channel is not present, leave the color value as it was declared (default)
 		if(p_textures[MaterialTypes::MaterialTypes_Roughness])
 		{
-			R = p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels];
+			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
+			if(p_average)
+			{
+				unsigned int RGB =	p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels + 0u] +
+									p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels + 1u] +
+									p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels + 2u];
+
+				R = (unsigned char)(RGB / 3u);
+			}
+			else
+				R = p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels];
+
+			// Invert the color if the flag is set for it
+			if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+				R = 255ui8 - R;
 		}
 		if(p_textures[MaterialTypes::MaterialTypes_Metalness])
 		{
-			M = p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_numChannels];
+			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
+			if(p_average)
+			{
+				unsigned int RGB =	p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_numChannels + 0u] +
+									p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_numChannels + 1u] +
+									p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_numChannels + 2u];
+
+				M = (unsigned char)(RGB / 3u);
+			}
+			else
+				M = p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_numChannels];
+
+			// Invert the color if the flag is set for it
+			if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+				M = 255ui8 - M;
 		}
 		if(p_textures[MaterialTypes::MaterialTypes_Height])
 		{
-			H = p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_numChannels];
+			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
+			if(p_average)
+			{
+				unsigned int RGB =	p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_numChannels + 0u] +
+									p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_numChannels + 1u] +
+									p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_numChannels + 2u];
+
+				H = (unsigned char)(RGB / 3u);
+			}
+			else
+				H = p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_numChannels];
+
+			// Invert the color if the flag is set for it
+			if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+				H = 255ui8 - H;
 		}
 		if(p_textures[MaterialTypes::MaterialTypes_AO])
 		{
-			AO = p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_numChannels];
+			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
+			if(p_average)
+			{
+				unsigned int RGB =	p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_numChannels + 0u] +
+									p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_numChannels + 1u] +
+									p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_numChannels + 2u];
+
+				AO = (unsigned char)(RGB / 3u);
+			}
+			else
+				AO = p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_numChannels];
+
+			// Invert the color if the flag is set for it
+			if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+				AO = 255ui8 - AO;
 		}
 
-		combinedTexture.m_pixelData[i * 4 + 0] = R;// (*redChannelTexture)[i * redSamplesPerPixel];
-		combinedTexture.m_pixelData[i * 4 + 1] = M;// (*greenChannelTexture)[i * greenSamplesPerPixel];
-		combinedTexture.m_pixelData[i * 4 + 2] = H;// (*blueChannelTexture)[i * blueSamplesPerPixel];
-		combinedTexture.m_pixelData[i * 4 + 3] = AO;// (*alphaChannelTexture)[i * alphaSamplesPerPixel];
-
-		// FreeImage loads in BGR format, therefore swap of bytes is needed (Or usage of GL_BGR)
-		/*for(unsigned int i = 0; i < returnTexture->m_size; i++)
-		{
-			blue = returnTexture->m_pixelData[i * returnTexture->m_numChannels + 0];																// Store blue
-			returnTexture->m_pixelData[i * returnTexture->m_numChannels + 0] = returnTexture->m_pixelData[i * returnTexture->m_numChannels + 2];	// Set red
-			returnTexture->m_pixelData[i * returnTexture->m_numChannels + 2] = blue;																// Set blue
-		}*/
+		// Combine all color channels into a single pixel color
+		combinedTexture.m_pixelData[i * 4u + 0u] = R;	// RED channel = roughness
+		combinedTexture.m_pixelData[i * 4u + 1u] = M;	// GREEN channel = metalness
+		combinedTexture.m_pixelData[i * 4u + 2u] = H;	// BLUE channel = height
+		combinedTexture.m_pixelData[i * 4u + 3u] = AO;	// ALPHA channel = ambient occlusion
 	}
 
-	unsigned int bpp = 4 * 8;
-	int pitch = ((((bpp * firstValidTexture->m_textureWidth) + 31) / 32) * 4);
+	// Calculate bits per pixel and pitch
+	unsigned int bpp = 4u * 8u;
+	int pitch = ((((bpp * firstValidTexture->m_textureWidth) + 31u) / 32u) * 4u);
 
 	// Convert texture to a bitmap
 	combinedTexture.m_bitmap = FreeImage_ConvertFromRawBits(combinedTexture.m_pixelData,
@@ -154,11 +207,13 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 		FI_RGBA_BLUE_MASK,
 		FALSE);
 
+	FREE_IMAGE_FORMAT imageFormat;
+
+	// Get the combined texture filename extension
 	std::filesystem::path filename = p_filename;
 	std::string fileExtension = filename.extension().string();
 
-	FREE_IMAGE_FORMAT imageFormat;
-
+	// Determine the format based on the extension contained in the filename (check of all-lowercase or all-uppercase only, no mixed case)
 	if(fileExtension == ".tif" || fileExtension == ".TIF" || fileExtension == ".tiff" || fileExtension == ".TIFF")
 		imageFormat = FREE_IMAGE_FORMAT::FIF_TIFF;
 	else
@@ -174,12 +229,13 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 					if(fileExtension == ".jpg" || fileExtension == ".JPG" || fileExtension == ".jpeg" || fileExtension == ".JPEG")
 						imageFormat = FREE_IMAGE_FORMAT::FIF_JPEG;
 					else
-						return TextureErrorCodes::TextureErrorCodes_UnsuportedFormat;
+						return TextureErrorCodes::TextureErrorCodes_UnsupportedFormat;
 
 
 	// Save the texture to file; add an appropriate file extension to the filename
 	bool saveSuccessful = (FreeImage_Save(imageFormat, combinedTexture.m_bitmap, p_filename.c_str()) != 0);
 
+	// Return an error code based on the success of saving the combined texture
 	return saveSuccessful ? TextureErrorCodes::TextureErrorCodes_Success : TextureErrorCodes::TextureErrorCodes_SaveFailed;
 }
 
@@ -241,16 +297,6 @@ Texture *TextureLoader::loadTexture(std::string& p_filename, bool p_makeGreyscal
 			if(p_makeGreyscale)
 			{
 				makeGreyscale(*returnTexture);
-			}
-			else
-			{
-				// FreeImage loads in BGR format, therefore swap of bytes is needed (Or usage of GL_BGR)
-				/*for(unsigned int i = 0; i < returnTexture->m_size; i++)
-				{
-					blue = returnTexture->m_pixelData[i * returnTexture->m_numChannels + 0];																// Store blue
-					returnTexture->m_pixelData[i * returnTexture->m_numChannels + 0] = returnTexture->m_pixelData[i * returnTexture->m_numChannels + 2];	// Set red
-					returnTexture->m_pixelData[i * returnTexture->m_numChannels + 2] = blue;																// Set blue
-				}*/
 			}
 		}
 		else
@@ -331,26 +377,12 @@ Texture *TextureLoader::loadCombinedTexture(std::string &p_redChanel, std::strin
 		pixelData[i * 4 + 1] = (*greenChannelTexture)[i * greenSamplesPerPixel];
 		pixelData[i * 4 + 2] = (*blueChannelTexture)[i * blueSamplesPerPixel];
 		pixelData[i * 4 + 3] = (*alphaChannelTexture)[i * alphaSamplesPerPixel];
-
-		//pixelData[i * 4 + 0] = (*redChannelTexture)[i * redSamplesPerPixel];
-		//pixelData[i * 4 + 1] = greenChannelTexture->m_pixelData[i * greenSamplesPerPixel];
-		//pixelData[i * 4 + 2] = (*blueChannelTexture)[i * blueSamplesPerPixel];
-		//pixelData[i * 4 + 3] = (*alphaChannelTexture)[i * alphaSamplesPerPixel];
 	}
 
 	// Construct the new texture
 	returnTexture = new Texture();
 	returnTexture->setValues(biggestTexture->m_textureWidth, biggestTexture->m_textureHeight, 4);
 	returnTexture->m_pixelData = pixelData;
-
-
-	//returnTexture->m_textureHeight = biggestTexture->m_textureHeight;
-	//returnTexture->m_textureWidth = biggestTexture->m_textureWidth;
-	//returnTexture->m_pitch = returnTexture->m_textureWidth * 4;
-	//returnTexture->m_pixelData = pixelData;
-	//returnTexture->m_samplesPerPixel =  4;
-	//returnTexture->m_bytesPerPixel = returnTexture->m_samplesPerPixel * sizeof(unsigned char);
-	//biggestTexture->m_pixelData = pixelData;
 
 	// Save the new texture in the texture array
 	m_textures.push_back(returnTexture);

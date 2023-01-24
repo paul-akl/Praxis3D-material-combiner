@@ -39,17 +39,19 @@ enum MaterialTypes : unsigned int
 	MaterialTypes_NumOfTypes
 };
 
+// Errors types that are returned from CombineAndSave function
 enum TextureErrorCodes : unsigned int
 {
 	TextureErrorCodes_Success = 0,
 	TextureErrorCodes_Fail,
-	TextureErrorCodes_SizeMissmatch,
+	TextureErrorCodes_SizeMismatch,
 	TextureErrorCodes_NoTextures,
 	TextureErrorCodes_FilenameEmpty,
-	TextureErrorCodes_UnsuportedFormat,
+	TextureErrorCodes_UnsupportedFormat,
 	TextureErrorCodes_SaveFailed
 };
 
+// Holds a pointer to a texture and its parameters
 struct TextureAndParams
 {
 	TextureAndParams()
@@ -61,8 +63,11 @@ struct TextureAndParams
 
 	operator bool() const { return m_texturePresent; }
 
+	// Pointer to the loaded texture
 	Texture *m_texture;
+	// Determines whether the texture pointer is valid (instead of checking if it is equal to nullptr
 	bool m_texturePresent;
+	// Determines whether the color of the texture should be inverted (for instance, when converting from smoothness/gloss map to roughness map)
 	bool m_invert;
 };
 
@@ -141,7 +146,7 @@ public:
 	// Saves the given texture to file; adds the file extension to the end of the filename based on the given texture format
 	bool saveTexture(Texture *p_texture, std::string &p_filename, TextureExportFormatType p_format);
 
-	TextureErrorCodes combineAndSave(TextureAndParams p_textures[MaterialTypes::MaterialTypes_NumOfTypes], std::string &p_filename);
+	TextureErrorCodes combineAndSave(TextureAndParams p_textures[MaterialTypes::MaterialTypes_NumOfTypes], const std::string &p_filename, bool p_average = false);
 
 	// Loads a texture from the given filename
 	// Returns the texture if successful; returns nullptr if unsuccessful
