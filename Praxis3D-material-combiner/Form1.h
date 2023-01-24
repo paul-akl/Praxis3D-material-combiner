@@ -251,7 +251,6 @@ namespace CppCLRWinFormsProject {
 			this->m_roughnessTextBox->Name = L"m_roughnessTextBox";
 			this->m_roughnessTextBox->Size = System::Drawing::Size(439, 20);
 			this->m_roughnessTextBox->TabIndex = 2;
-			this->m_roughnessTextBox->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
 			// 
 			// m_metalnessTextBox
 			// 
@@ -259,16 +258,15 @@ namespace CppCLRWinFormsProject {
 			this->m_metalnessTextBox->Name = L"m_metalnessTextBox";
 			this->m_metalnessTextBox->Size = System::Drawing::Size(439, 20);
 			this->m_metalnessTextBox->TabIndex = 4;
-			this->m_metalnessTextBox->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
 			// 
 			// m_metalnessLabel
 			// 
 			this->m_metalnessLabel->AutoSize = true;
-			this->m_metalnessLabel->Location = System::Drawing::Point(49, 83);
+			this->m_metalnessLabel->Location = System::Drawing::Point(63, 84);
 			this->m_metalnessLabel->Name = L"m_metalnessLabel";
-			this->m_metalnessLabel->Size = System::Drawing::Size(58, 13);
+			this->m_metalnessLabel->Size = System::Drawing::Size(46, 13);
 			this->m_metalnessLabel->TabIndex = 3;
-			this->m_metalnessLabel->Text = L"Metalness:";
+			this->m_metalnessLabel->Text = L"Metallic:";
 			// 
 			// m_heightTextBox
 			// 
@@ -276,7 +274,6 @@ namespace CppCLRWinFormsProject {
 			this->m_heightTextBox->Name = L"m_heightTextBox";
 			this->m_heightTextBox->Size = System::Drawing::Size(439, 20);
 			this->m_heightTextBox->TabIndex = 6;
-			this->m_heightTextBox->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
 			// 
 			// m_heightLabel
 			// 
@@ -293,7 +290,6 @@ namespace CppCLRWinFormsProject {
 			this->m_aoTextBox->Name = L"m_aoTextBox";
 			this->m_aoTextBox->Size = System::Drawing::Size(439, 20);
 			this->m_aoTextBox->TabIndex = 8;
-			this->m_aoTextBox->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
 			// 
 			// m_ambientOcclusionLabel
 			// 
@@ -426,7 +422,6 @@ namespace CppCLRWinFormsProject {
 			this->m_rmhaoTextBox->Name = L"m_rmhaoTextBox";
 			this->m_rmhaoTextBox->Size = System::Drawing::Size(439, 20);
 			this->m_rmhaoTextBox->TabIndex = 20;
-			this->m_rmhaoTextBox->TextAlign = System::Windows::Forms::HorizontalAlignment::Right;
 			// 
 			// m_rmhaoLabel
 			// 
@@ -606,13 +601,11 @@ namespace CppCLRWinFormsProject {
 			{
 				m_roughnessTextBox->Enabled = false;
 				m_roughnessBrowseButton->Enabled = false;
-				m_roughnessInvertCheckBox->Enabled = false;
 			}
 			else
 			{
 				m_roughnessTextBox->Enabled = true;
 				m_roughnessBrowseButton->Enabled = true;
-				m_roughnessInvertCheckBox->Enabled = true;
 			}
 		}
 		private: System::Void m_metalnessCheckBox_CheckedChanged(System::Object ^sender, System::EventArgs ^e) 
@@ -621,13 +614,11 @@ namespace CppCLRWinFormsProject {
 			{
 				m_metalnessTextBox->Enabled = false;
 				m_metalnessBrowseButton->Enabled = false;
-				m_metalnessInvertCheckBox->Enabled = false;
 			}
 			else
 			{
 				m_metalnessTextBox->Enabled = true;
 				m_metalnessBrowseButton->Enabled = true;
-				m_metalnessInvertCheckBox->Enabled = true;
 			}
 
 		}
@@ -637,13 +628,11 @@ namespace CppCLRWinFormsProject {
 			{
 				m_heightTextBox->Enabled = false;
 				m_heightBrowseButton->Enabled = false;
-				m_heightInvertCheckBox->Enabled = false;
 			}
 			else
 			{
 				m_heightTextBox->Enabled = true;
 				m_heightBrowseButton->Enabled = true;
-				m_heightInvertCheckBox->Enabled = true;
 			}
 
 		}
@@ -653,13 +642,11 @@ namespace CppCLRWinFormsProject {
 			{
 				m_aoTextBox->Enabled = false;
 				m_aoBrowseButton->Enabled = false;
-				m_aoInvertCheckBox->Enabled = false;
 			}
 			else
 			{
 				m_aoTextBox->Enabled = true;
 				m_aoBrowseButton->Enabled = true;
-				m_aoInvertCheckBox->Enabled = true;
 			}
 
 		}
@@ -668,6 +655,9 @@ namespace CppCLRWinFormsProject {
 			if(m_openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 			{
 				m_roughnessTextBox->Text = m_openFileDialog->FileName;
+
+				// Select the end of the text, to make sure that the filename is visible if the directory is too long to fit
+				m_roughnessTextBox->Select(m_roughnessTextBox->TextLength, 0);
 			}
 		}
 		private: System::Void m_metalnessBrowseButton_Click(System::Object ^sender, System::EventArgs ^e) 
@@ -675,6 +665,9 @@ namespace CppCLRWinFormsProject {
 			if(m_openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 			{
 				m_metalnessTextBox->Text = m_openFileDialog->FileName;
+
+				// Select the end of the text, to make sure that the filename is visible if the directory is too long to fit
+				m_metalnessTextBox->Select(m_roughnessTextBox->TextLength, 0);
 			}
 		}
 		private: System::Void m_heightBrowseButton_Click(System::Object ^sender, System::EventArgs ^e) 
@@ -682,6 +675,9 @@ namespace CppCLRWinFormsProject {
 			if(m_openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 			{
 				m_heightTextBox->Text = m_openFileDialog->FileName;
+
+				// Select the end of the text, to make sure that the filename is visible if the directory is too long to fit
+				m_heightTextBox->Select(m_roughnessTextBox->TextLength, 0);
 			}
 		}
 		private: System::Void m_aoBrowseButton_Click(System::Object ^sender, System::EventArgs ^e) 
@@ -689,6 +685,9 @@ namespace CppCLRWinFormsProject {
 			if(m_openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 			{
 				m_aoTextBox->Text = m_openFileDialog->FileName;
+
+				// Select the end of the text, to make sure that the filename is visible if the directory is too long to fit
+				m_aoTextBox->Select(m_roughnessTextBox->TextLength, 0);
 			}
 		}
 		private: System::Void m_rmhaoBrowseButton_Click(System::Object ^sender, System::EventArgs ^e) 
@@ -696,6 +695,9 @@ namespace CppCLRWinFormsProject {
 			if(m_saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 			{
 				m_rmhaoTextBox->Text = m_saveFileDialog->FileName;
+
+				// Select the end of the text, to make sure that the filename is visible if the directory is too long to fit
+				m_rmhaoTextBox->Select(m_roughnessTextBox->TextLength, 0);
 			}
 		}
 		private: System::Void m_combineButton_Click(System::Object ^sender, System::EventArgs ^e) 
@@ -718,12 +720,12 @@ namespace CppCLRWinFormsProject {
 			if(!System::String::IsNullOrEmpty(m_roughnessTextBox->Text))
 			{
 				inputTextures[MaterialTypes::MaterialTypes_Roughness].m_texture = m_textureLoader->loadTexture(toString(m_roughnessTextBox->Text));
+				inputTextures[MaterialTypes::MaterialTypes_Roughness].m_invert = m_roughnessInvertCheckBox->Checked;
 
-				// Set texture parameters if it was loaded successfully
-				if(inputTextures[MaterialTypes::MaterialTypes_Roughness].m_texture != nullptr)
+				// Set texture parameters if it wasn't checked as 'unused' and was loaded successfully
+				if(!m_roughnessCheckBox->Checked && inputTextures[MaterialTypes::MaterialTypes_Roughness].m_texture != nullptr)
 				{
 					inputTextures[MaterialTypes::MaterialTypes_Roughness].m_texturePresent = true;
-					inputTextures[MaterialTypes::MaterialTypes_Roughness].m_invert = m_roughnessInvertCheckBox->Checked;
 				}
 			}
 			else
@@ -737,12 +739,12 @@ namespace CppCLRWinFormsProject {
 			if(!System::String::IsNullOrEmpty(m_metalnessTextBox->Text))
 			{
 				inputTextures[MaterialTypes::MaterialTypes_Metalness].m_texture = m_textureLoader->loadTexture(toString(m_metalnessTextBox->Text));
+				inputTextures[MaterialTypes::MaterialTypes_Metalness].m_invert = m_metalnessInvertCheckBox->Checked;
 
-				// Set texture parameters if it was loaded successfully
-				if(inputTextures[MaterialTypes::MaterialTypes_Metalness].m_texture != nullptr)
+				// Set texture parameters if it wasn't checked as 'unused' and was loaded successfully
+				if(!m_metalnessCheckBox->Checked && inputTextures[MaterialTypes::MaterialTypes_Metalness].m_texture != nullptr)
 				{
 					inputTextures[MaterialTypes::MaterialTypes_Metalness].m_texturePresent = true;
-					inputTextures[MaterialTypes::MaterialTypes_Metalness].m_invert = m_metalnessInvertCheckBox->Checked;
 				}
 			}
 			else
@@ -756,12 +758,12 @@ namespace CppCLRWinFormsProject {
 			if(!System::String::IsNullOrEmpty(m_heightTextBox->Text))
 			{
 				inputTextures[MaterialTypes::MaterialTypes_Height].m_texture = m_textureLoader->loadTexture(toString(m_heightTextBox->Text));
+				inputTextures[MaterialTypes::MaterialTypes_Height].m_invert = m_heightInvertCheckBox->Checked;
 
-				// Set texture parameters if it was loaded successfully
-				if(inputTextures[MaterialTypes::MaterialTypes_Height].m_texture != nullptr)
+				// Set texture parameters if it wasn't checked as 'unused' and was loaded successfully
+				if(!m_heightCheckBox->Checked && inputTextures[MaterialTypes::MaterialTypes_Height].m_texture != nullptr)
 				{
 					inputTextures[MaterialTypes::MaterialTypes_Height].m_texturePresent = true;
-					inputTextures[MaterialTypes::MaterialTypes_Height].m_invert = m_heightInvertCheckBox->Checked;
 				}
 			}
 			else
@@ -775,12 +777,12 @@ namespace CppCLRWinFormsProject {
 			if(!System::String::IsNullOrEmpty(m_aoTextBox->Text))
 			{
 				inputTextures[MaterialTypes::MaterialTypes_AO].m_texture = m_textureLoader->loadTexture(toString(m_rmhaoTextBox->Text));
+				inputTextures[MaterialTypes::MaterialTypes_AO].m_invert = m_aoInvertCheckBox->Checked;
 
-				// Set texture parameters if it was loaded successfully
-				if(inputTextures[MaterialTypes::MaterialTypes_AO].m_texture != nullptr)
+				// Set texture parameters if it wasn't checked as 'unused' and was loaded successfully
+				if(!m_aoCheckBox->Checked && inputTextures[MaterialTypes::MaterialTypes_AO].m_texture != nullptr)
 				{
 					inputTextures[MaterialTypes::MaterialTypes_AO].m_texturePresent = true;
-					inputTextures[MaterialTypes::MaterialTypes_AO].m_invert = m_aoInvertCheckBox->Checked;
 				}
 			}
 			else

@@ -125,11 +125,11 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 			}
 			else
 				R = p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels];
-
-			// Invert the color if the flag is set for it
-			if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
-				R = 255ui8 - R;
 		}
+		// Invert the color if the flag is set for it
+		if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+			R = 255ui8 - R;
+
 		if(p_textures[MaterialTypes::MaterialTypes_Metalness])
 		{
 			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
@@ -143,11 +143,11 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 			}
 			else
 				M = p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_numChannels];
-
-			// Invert the color if the flag is set for it
-			if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
-				M = 255ui8 - M;
 		}
+		// Invert the color if the flag is set for it
+		if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+			M = 255ui8 - M;
+
 		if(p_textures[MaterialTypes::MaterialTypes_Height])
 		{
 			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
@@ -161,11 +161,11 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 			}
 			else
 				H = p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_numChannels];
-
-			// Invert the color if the flag is set for it
-			if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
-				H = 255ui8 - H;
 		}
+		// Invert the color if the flag is set for it
+		if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+			H = 255ui8 - H;
+
 		if(p_textures[MaterialTypes::MaterialTypes_AO])
 		{
 			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
@@ -179,11 +179,10 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 			}
 			else
 				AO = p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_numChannels];
-
-			// Invert the color if the flag is set for it
-			if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
-				AO = 255ui8 - AO;
 		}
+		// Invert the color if the flag is set for it
+		if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+			AO = 255ui8 - AO;
 
 		// Combine all color channels into a single pixel color
 		combinedTexture.m_pixelData[i * 4u + 0u] = R;	// RED channel = roughness
