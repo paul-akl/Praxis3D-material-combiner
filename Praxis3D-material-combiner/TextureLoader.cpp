@@ -114,12 +114,12 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 		// Go over each color channel and calculate the value; If the input texture for that channel is not present, leave the color value as it was declared (default)
 		if(p_textures[MaterialTypes::MaterialTypes_Roughness])
 		{
-			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
-			if(p_average)
+			// If the average flag is set (and input texture is either RGB or RGBA), average out the RGB colors into a single one; otherwise just get the RED channel color
+			if(p_average && (p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_textureFormat == TextureFormat::TextureFormat_RGB || p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_textureFormat == TextureFormat::TextureFormat_RGBA))
 			{
-				unsigned int RGB =	p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels + 0u] +
-									p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels + 1u] +
-									p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels + 2u];
+				unsigned int RGB = p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels + 0u] +
+					p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels + 1u] +
+					p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Roughness].m_texture->m_numChannels + 2u];
 
 				R = (unsigned char)(RGB / 3u);
 			}
@@ -132,8 +132,8 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 
 		if(p_textures[MaterialTypes::MaterialTypes_Metalness])
 		{
-			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
-			if(p_average)
+			// If the average flag is set (and input texture is either RGB or RGBA), average out the RGB colors into a single one; otherwise just get the RED channel color
+			if(p_average && (p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_textureFormat == TextureFormat::TextureFormat_RGB || p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_textureFormat == TextureFormat::TextureFormat_RGBA))
 			{
 				unsigned int RGB =	p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_numChannels + 0u] +
 									p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_numChannels + 1u] +
@@ -145,13 +145,13 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 				M = p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Metalness].m_texture->m_numChannels];
 		}
 		// Invert the color if the flag is set for it
-		if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+		if(p_textures[MaterialTypes::MaterialTypes_Metalness].m_invert)
 			M = 255ui8 - M;
 
 		if(p_textures[MaterialTypes::MaterialTypes_Height])
 		{
-			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
-			if(p_average)
+			// If the average flag is set (and input texture is either RGB or RGBA), average out the RGB colors into a single one; otherwise just get the RED channel color
+			if(p_average && (p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_textureFormat == TextureFormat::TextureFormat_RGB || p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_textureFormat == TextureFormat::TextureFormat_RGBA))
 			{
 				unsigned int RGB =	p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_numChannels + 0u] +
 									p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_numChannels + 1u] +
@@ -163,13 +163,13 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 				H = p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_Height].m_texture->m_numChannels];
 		}
 		// Invert the color if the flag is set for it
-		if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+		if(p_textures[MaterialTypes::MaterialTypes_Height].m_invert)
 			H = 255ui8 - H;
 
 		if(p_textures[MaterialTypes::MaterialTypes_AO])
 		{
-			// If the average flag is set, average out the RGB colors into a single one; otherwise just get the RED channel color
-			if(p_average)
+			// If the average flag is set (and input texture is either RGB or RGBA), average out the RGB colors into a single one; otherwise just get the RED channel color
+			if(p_average && (p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_textureFormat == TextureFormat::TextureFormat_RGB || p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_textureFormat == TextureFormat::TextureFormat_RGBA))
 			{
 				unsigned int RGB =	p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_numChannels + 0u] +
 									p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_numChannels + 1u] +
@@ -181,7 +181,7 @@ TextureErrorCodes TextureLoader::combineAndSave(TextureAndParams p_textures[Mate
 				AO = p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_pixelData[i * p_textures[MaterialTypes::MaterialTypes_AO].m_texture->m_numChannels];
 		}
 		// Invert the color if the flag is set for it
-		if(p_textures[MaterialTypes::MaterialTypes_Roughness].m_invert)
+		if(p_textures[MaterialTypes::MaterialTypes_AO].m_invert)
 			AO = 255ui8 - AO;
 
 		// Combine all color channels into a single pixel color
@@ -273,10 +273,16 @@ Texture *TextureLoader::loadTexture(std::string& p_filename, bool p_makeGreyscal
 				returnTexture->m_bitmap = FreeImage_ConvertTo24Bits(returnTexture->m_bitmap);
 			}
 			else
-			{
-				returnTexture->m_textureFormat = TextureFormat::TextureFormat_RGBA;
-				returnTexture->m_bitmap = FreeImage_ConvertTo32Bits(returnTexture->m_bitmap);
-			}
+				if(returnTexture->m_samplesPerPixel == 4)
+				{
+					returnTexture->m_textureFormat = TextureFormat::TextureFormat_RGBA;
+					returnTexture->m_bitmap = FreeImage_ConvertTo32Bits(returnTexture->m_bitmap);
+				}
+				else
+				{
+					returnTexture->m_textureFormat = TextureFormat::TextureFormat_GrayScale;
+					returnTexture->m_bitmap = FreeImage_ConvertToGreyscale(returnTexture->m_bitmap);
+				}
 
 			// Get texture width, height and size
 			returnTexture->m_textureWidth = FreeImage_GetWidth(returnTexture->m_bitmap);
@@ -291,7 +297,13 @@ Texture *TextureLoader::loadTexture(std::string& p_filename, bool p_makeGreyscal
 			unsigned char blue = 0;
 
 			// Define number of channels per pixel
-			returnTexture->m_numChannels = returnTexture->m_textureFormat == TextureFormat::TextureFormat_RGB ? 3 : 4;
+			if(returnTexture->m_textureFormat == TextureFormat::TextureFormat_RGB)
+				returnTexture->m_numChannels = 3;
+			else
+				if(returnTexture->m_textureFormat == TextureFormat::TextureFormat_RGBA)
+					returnTexture->m_numChannels = 4;
+				else
+					returnTexture->m_numChannels = 1;
 
 			if(p_makeGreyscale)
 			{

@@ -18,13 +18,15 @@ DECLARE_ENUM(TextureExportFormatType, TEXTUREEXPORTFORMAT)
 class Texture;
 
 // Layout of the texture color channels
-enum class TextureFormat : unsigned int
+enum TextureFormat : unsigned int
 {
 	TextureFormat_Null = 0,
-	TextureFormat_Red,
-	TextureFormat_Green,
-	TextureFormat_Blue,
-	TextureFormat_Alpha,
+	TextureFormat_GrayScale,
+	//TextureFormat_RG,
+	//TextureFormat_Red,
+	//TextureFormat_Green,
+	//TextureFormat_Blue,
+	//TextureFormat_Alpha,
 	TextureFormat_RGB,
 	TextureFormat_RGBA
 };
